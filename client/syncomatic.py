@@ -23,7 +23,6 @@ def init_config():
 
 
 def get_server_url():
-    init_config()
     config_path = os.path.expanduser('~') + '/.config/syncomatic/config.yml'
     with open(config_path, 'r') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
@@ -121,7 +120,7 @@ def setup_remote():
         log('Changed remote URL to ' + new_url)
 
 
-get_server_url()
+init_config()
 
 if (len(sys.argv) == 1):
     show_help()

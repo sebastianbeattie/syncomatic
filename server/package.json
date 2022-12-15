@@ -1,12 +1,12 @@
 {
-  "name": "server",
+  "name": "syncomatic-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A place for syncomatic to dump archives and then ask for them back later",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "sebastianbeattie",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",

@@ -73,7 +73,7 @@ def project_exists_remote(project):
     return r.status_code == 200
 
 
-def download_project_remote(project_name):
+def download_project_remote(project_name, specified_by_user):
     params = {
         'project_name': project_name
     }
@@ -84,7 +84,7 @@ def download_project_remote(project_name):
         log('Downloaded!', 'SUCCESS')
         log('Extracting project...')
         tar = tarfile.open(file_name)
-        tar.extractall('..')
+        tar.extractall('.' if specified_by_user else '..')
         tar.close()
         os.remove(file_name)
     else:
@@ -94,16 +94,18 @@ def download_project_remote(project_name):
 def pull_directory():
     log('Pulling directory...')
     project_name = ''
+    specified_by_user = False
     if len(sys.argv) == 2:
         log('No project specified, falling back to current directory')
         project_name = get_project_name()
     else:
         project_name = sys.argv[2]
+        specified_by_user = True
         log('Project name has been specified. Searching for ' + project_name)
 
     if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        download_project_remote(project_name)
+        download_project_remote(project_name, specified_by_user)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 

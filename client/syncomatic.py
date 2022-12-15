@@ -33,9 +33,17 @@ def log(message, status='INFO'):
     print('[', datetime.now(), '] (' + status + ')', message)
 
 
+def ignore_dot_git(tarinfo):
+    if tarinfo.name == '.git':
+        return None
+    else:
+        return tarinfo
+
+
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, 'w:gz') as tar:
-        tar.add(source_dir, arcname=os.path.basename(source_dir))
+        tar.add(source_dir, arcname=os.path.basename(
+            source_dir), filter=ignore_dot_git)
 
 
 def get_project_name():

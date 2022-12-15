@@ -57,13 +57,15 @@ def download_project_remote(project_name):
         'project_name': project_name
     }
     r = requests.get('http://localhost:3000/download', params=params)
-    open(project_name + '.tar.gz', 'wb').write(r.content)
+    file_name = project_name + '.tar.gz'
+    open(file_name, 'wb').write(r.content)
     if (r.status_code == 200):
         log('Downloaded!', 'SUCCESS')
         log('Extracting project...')
-        tar = tarfile.open(project_name + '.tar.gz')
-        tar.extractall()
+        tar = tarfile.open(file_name)
+        tar.extractall('..')
         tar.close()
+        os.remove(file_name)
     else:
         log('Download Failed :(', 'FAIL')
 

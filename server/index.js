@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 var multer = require('multer');
 const fs = require("fs");
+const config = require("./config.json")
 var upload = multer({ path: multer.memoryStorage() });
 const app = express();
 
@@ -42,6 +43,6 @@ app.get("/download", (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log("Listening on port 3000");
+app.listen(config.port, () => {
+    console.log(`Syncomatic Server available on port ${config.port}`);
 });

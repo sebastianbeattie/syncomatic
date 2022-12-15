@@ -60,6 +60,10 @@ def download_project_remote(project_name):
     open(project_name + '.tar.gz', 'wb').write(r.content)
     if (r.status_code == 200):
         log('Downloaded!', 'SUCCESS')
+        log('Extracting project...')
+        tar = tarfile.open(project_name + '.tar.gz')
+        tar.extractall()
+        tar.close()
     else:
         log('Download Failed :(', 'FAIL')
 

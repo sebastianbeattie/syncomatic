@@ -6,6 +6,28 @@ import tarfile
 import os.path
 import os
 import requests
+import yaml
+
+
+def init_config():
+    config_path = os.path.expanduser('~') + '/.config/syncomatic/'
+    if not os.path.exists(config_path):
+        log('Syncomatic config dir doesn\'t exist. Creating...')
+        os.makedirs(config_path)
+    config_file_path = config_path + 'config.yml'
+    if not os.path.isfile(config_file_path):
+        log('Syncomatic config file doesn\'t exist. Creating default...')
+        config = {'server': 'http://localhost:3000'}
+        with open(config_file_path, 'w') as file:
+            yaml.dump(config, file)
+
+
+def get_server_url():
+    init_config()
+    config_path = os.path.expanduser('~') + '/.config/syncomatic/config.yml'
+    with open(config_path, 'r') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+        return config['server']
 
 
 def log(message, status='INFO'):
@@ -24,7 +46,7 @@ def get_project_name():
 def send_directory():
     log('Compressing directory...')
     if not os.path.exists('/var/tmp/syncomatic'):
-        log('Syncomatic dir doesn\'t exist. Creating...')
+        log('Syncomatic archive dir doesn\'t exist. Creating...')
         os.makedirs('/var/tmp/syncomatic/')
     make_tarfile('/var/tmp/syncomatic/archive.tar.gz', os.getcwd())
     log('Compressed!')
@@ -91,11 +113,23 @@ def show_help():
     print('Something helpful')
 
 
+def setup_remote():
+    if (len(sys.argv) == 2):
+        log('Current server URL: ' + get_server_url())
+    else:
+        new_url = sys.argv[2]
+        log('Changed remote URL to ' + new_url)
+
+
+get_server_url()
+
 if (len(sys.argv) == 1):
     show_help()
 elif (sys.argv[1] == 'send'):
     send_directory()
 elif (sys.argv[1] == 'pull'):
     pull_directory()
+elif (sys.argv[1] == 'remote'):
+    setup_remote()
 else:
     log('Doing nothing')

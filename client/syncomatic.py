@@ -34,7 +34,7 @@ def log(message, status='INFO'):
 
 
 def ignore_dot_git(tarinfo):
-    if tarinfo.name == '.git':
+    if '/.git' in tarinfo.name:
         return None
     else:
         return tarinfo

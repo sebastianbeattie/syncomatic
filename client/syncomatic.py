@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 from datetime import datetime
 import tarfile
@@ -79,7 +81,13 @@ def pull_directory():
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 
 
-if (sys.argv[1] == 'send'):
+def show_help():
+    print('Something helpful')
+
+
+if (len(sys.argv) == 1):
+    show_help()
+elif (sys.argv[1] == 'send'):
     send_directory()
 elif (sys.argv[1] == 'pull'):
     pull_directory()

@@ -15,11 +15,11 @@ def make_tarfile(output_filename, source_dir):
         tar.add(source_dir, arcname=os.path.basename(source_dir))
 
 
-def getProjectName():
+def get_project_name():
     return os.getcwd().split('/').pop()
 
 
-def sendDirectory():
+def send_directory():
     log('Compressing directory...')
     if not os.path.exists('/var/tmp/syncomatic'):
         log('Syncomatic dir doesn\'t exist. Creating...')
@@ -28,7 +28,7 @@ def sendDirectory():
     log('Compressed!')
     log('Uploading directory...')
     with open('/var/tmp/syncomatic/archive.tar.gz', 'rb') as file:
-        project_name = getProjectName()
+        project_name = get_project_name()
         params = {
             'project_name': project_name
         }
@@ -42,7 +42,7 @@ def sendDirectory():
     log('Finished!')
 
 
-def projectExistsRemote(project):
+def project_exists_remote(project):
     params = {
         'project_name': project
     }
@@ -50,7 +50,7 @@ def projectExistsRemote(project):
     return r.status_code == 200
 
 
-def downloadRemoteProject(project_name):
+def download_project_remote(project_name):
     params = {
         'project_name': project_name
     }
@@ -62,26 +62,26 @@ def downloadRemoteProject(project_name):
         log('Download Failed :(', 'FAIL')
 
 
-def pullDirectory():
+def pull_directory():
     log('Pulling directory...')
     project_name = ''
     if len(sys.argv) == 2:
         log('No project specified, falling back to current directory')
-        project_name = getProjectName()
+        project_name = get_project_name()
     else:
         project_name = sys.argv[2]
         log('Project name has been specified. Searching for ' + project_name)
 
-    if projectExistsRemote(project_name):
+    if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        downloadRemoteProject(project_name)
+        download_project_remote(project_name)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 
 
 if (sys.argv[1] == 'send'):
-    sendDirectory()
+    send_directory()
 elif (sys.argv[1] == 'pull'):
-    pullDirectory()
+    pull_directory()
 else:
     log('Doing nothing')

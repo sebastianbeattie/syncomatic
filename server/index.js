@@ -8,11 +8,11 @@ const app = express();
 app.use(morgan("dev"));
 
 app.post("/upload", upload.single('archive.tar.gz'), function (req, res, next) {
-    var file_buffer = req.file.buffer;
-    var target_path = 'archives/' + req.query.project_name + ".tar.gz";
-    var stream = fs.createWriteStream(target_path);
+    var fileBuffer = req.file.buffer;
+    var targetPath = 'archives/' + req.query.project_name + ".tar.gz";
+    var stream = fs.createWriteStream(targetPath);
     stream.once('open', function (fd) {
-        stream.write(file_buffer);
+        stream.write(fileBuffer);
         stream.end();
     })
     res.send("OK");
@@ -20,7 +20,8 @@ app.post("/upload", upload.single('archive.tar.gz'), function (req, res, next) {
 
 app.get("/exists", (req, res) => {
     var project = req.query.project_name;
-    if (fs.existsSync("./archives/" + project + ".tar.gz")) {
+    var fileName = __dirname + "/archives/" + project + ".tar.gz";
+    if (fs.existsSync(fileName)) {
         res.status(200);
         res.end();
     } else {

@@ -51,7 +51,15 @@ def projectExistsRemote(project):
 
 
 def downloadRemoteProject(project_name):
-    log('Downloaded!', 'SUCCESS')
+    params = {
+        'project_name': project_name
+    }
+    r = requests.get('http://localhost:3000/download', params=params)
+    open(project_name + '.tar.gz', 'wb').write(r.content)
+    if (r.status_code == 200):
+        log('Downloaded!', 'SUCCESS')
+    else:
+        log('Download Failed :(', 'FAIL')
 
 
 def pullDirectory():

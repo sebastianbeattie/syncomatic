@@ -20,7 +20,7 @@ app.post("/upload", upload.single('archive.tar.gz'), function (req, res, next) {
 
 app.get("/exists", (req, res) => {
     var project = req.query.project_name;
-    if (fs.existsSync("archives/" + project + ".tar.gz")) {
+    if (fs.existsSync("./archives/" + project + ".tar.gz")) {
         res.status(200);
         res.end();
     } else {
@@ -31,11 +31,12 @@ app.get("/exists", (req, res) => {
 
 app.get("/download", (req, res) => {
     var project = req.query.project_name;
-    if (fs.existsSync("archives/" + project + ".tar.gz")) {
-        res.statusCode(200);
-        res.end();
+    var fileName = __dirname + "/archives/" + project + ".tar.gz";
+    if (fs.existsSync(fileName)) {
+        res.status(200);
+        res.sendFile(fileName);
     } else {
-        res.statusCode(404);
+        res.status(404);
         res.end();
     }
 });

@@ -56,7 +56,7 @@ def send_directory():
         params = {
             'project_name': project_name
         }
-        r = requests.post('http://localhost:3000/upload', params=params,
+        r = requests.post(get_server_url() + '/upload', params=params,
                           files={'archive.tar.gz': file})
         if r.status_code == 200:
             log('Uploaded successfully!', 'SUCCESS')
@@ -70,7 +70,7 @@ def project_exists_remote(project):
     params = {
         'project_name': project
     }
-    r = requests.get('http://localhost:3000/exists', params=params)
+    r = requests.get(get_server_url() + '/exists', params=params)
     return r.status_code == 200
 
 
@@ -78,7 +78,7 @@ def download_project_remote(project_name):
     params = {
         'project_name': project_name
     }
-    r = requests.get('http://localhost:3000/download', params=params)
+    r = requests.get(get_server_url() + '/download', params=params)
     file_name = project_name + '.tar.gz'
     open(file_name, 'wb').write(r.content)
     if (r.status_code == 200):

@@ -7,6 +7,11 @@ var upload = multer({ path: multer.memoryStorage() });
 const app = express();
 
 app.use(morgan("dev"));
+app.use(express.static('public'));
+
+app.get("/", (req, res) => {
+    res.redirect("/index.html");
+})
 
 app.post("/upload", upload.single('archive.tar.gz'), function (req, res, next) {
     var fileBuffer = req.file.buffer;
@@ -29,7 +34,14 @@ app.get("/exists", (req, res) => {
         res.status(404);
         res.end();
     }
-})
+});
+
+app.get("/list", (req, res) => {
+    var fileList = fs.readdirSync(__dirname + "/archives");
+    res.setHeader("Content-Type", "application/json");
+    fileList = fileList.map(file => file.replace(".tar.gz", ""));
+    res.end(JSON.stringify({projects: fileList}));
+});
 
 app.get("/download", (req, res) => {
     var project = req.query.project_name;

@@ -101,7 +101,7 @@ def download_project_remote(project_name, specified_by_user, from_config_file):
         tar.extractall('.' if specified_by_user or from_config_file else '..')
         log("Extracted! Cleaning up...")
         tar.close()
-        #os.remove(file_name)
+        os.remove(file_name)
         log("All done!")
     else:
         log('Download Failed :(', 'FAIL')

@@ -127,7 +127,7 @@ def pull_directory():
 
 
 def show_help():
-    print('Syncomatic Help\n\npush [project name] - Push the current directory\npull [project name] - Pull the current directory\nremote - View the current server URL\n\nConfig is in ~/.config/syncomatic/config.yml\nYou only need to set the `server` parameter to your Syncomatic server. By default, it is set to localhost on port 3000')
+    print('Syncomatic Help\n\npush [project name] - Push the current directory\npull [project name] - Pull the current directory\nremote - View the current server URL\n\nConfig is in ~/.config/syncomatic/config.yml\nYou only need to set the `server` parameter to your Syncomatic server. By default, it is set to localhost on port 3000\n\nYou can create a file in the root of a project called .sm to set a project name override. Line 1 of this file should be the project name')
 
 
 def setup_remote():

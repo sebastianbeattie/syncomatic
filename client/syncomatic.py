@@ -7,6 +7,7 @@ import os.path
 import os
 import requests
 import yaml
+import shutil
 
 
 def init_config():
@@ -33,22 +34,20 @@ def log(message, status='INFO'):
     print('[', datetime.now(), '] (' + status + ')', message)
 
 
-def ignore_dot_git(tarinfo):
-    if '/.git' in tarinfo.name:
-        return None
-    else:
-        return tarinfo
-
-
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, 'w:gz') as tar:
-        tar.add(source_dir, arcname=os.path.basename(
-            source_dir), filter=ignore_dot_git)
+        files = os.listdir(".")
+        for file in files:
+            if not '.git' in file:
+                tar.add(file)
+        tar.close()
 
+def get_dir_name():
+    return os.getcwd().split('/').pop()
 
 def get_project_name():
     if not os.path.isfile('.sm'):
-        return os.getcwd().split('/').pop(), False
+        return get_dir_name(), False
     else:
         with open('.sm', 'r') as sm_file:
             project_name = sm_file.readline().strip('\n').strip('\r')
@@ -75,8 +74,9 @@ def send_directory():
             log('Uploaded successfully!', 'SUCCESS')
         else:
             log('Upload failed: ' + str(r.status_code), 'FAIL')
-
-    log('Finished!')
+    log('Finished! Cleaning up...')
+    os.remove('/var/tmp/syncomatic/archive.tar.gz')
+    log('Done!')
 
 
 def project_exists_remote(project):
@@ -87,7 +87,7 @@ def project_exists_remote(project):
     return r.status_code == 200
 
 
-def download_project_remote(project_name, directory_name_overridden):
+def download_project_remote(project_name, specified_by_user, from_config_file):
     params = {
         'project_name': project_name
     }
@@ -98,10 +98,10 @@ def download_project_remote(project_name, directory_name_overridden):
         log('Downloaded!', 'SUCCESS')
         log('Extracting project...')
         tar = tarfile.open(file_name)
-        tar.extractall('.' if directory_name_overridden else '..')
+        tar.extractall('.' if specified_by_user or from_config_file else '..')
         log("Extracted! Cleaning up...")
         tar.close()
-        os.remove(file_name)
+        #os.remove(file_name)
         log("All done!")
     else:
         log('Download Failed :(', 'FAIL')
@@ -110,18 +110,19 @@ def download_project_remote(project_name, directory_name_overridden):
 def pull_directory():
     log('Pulling directory...')
     project_name = ''
-    directory_name_overridden = False
+    specified_by_user = False
+    from_config_file = False
     if len(sys.argv) == 2:
         log('No project specified, falling back to current directory')
-        project_name, directory_name_overridden = get_project_name()
+        project_name, from_config_file = get_project_name()
     else:
         project_name = sys.argv[2]
-        directory_name_overriden = True
+        specified_by_user = True
         log('Project name has been specified. Searching for ' + project_name)
 
     if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        download_project_remote(project_name, directory_name_overridden)
+        download_project_remote(project_name, specified_by_user, from_config_file)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 

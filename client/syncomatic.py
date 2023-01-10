@@ -87,7 +87,7 @@ def project_exists_remote(project):
     return r.status_code == 200
 
 
-def download_project_remote(project_name, directory_name_overriden):
+def download_project_remote(project_name, directory_name_overridden):
     params = {
         'project_name': project_name
     }
@@ -98,7 +98,7 @@ def download_project_remote(project_name, directory_name_overriden):
         log('Downloaded!', 'SUCCESS')
         log('Extracting project...')
         tar = tarfile.open(file_name)
-        tar.extractall('.' if directory_name_overriden else '..')
+        tar.extractall('.' if directory_name_overridden else '..')
         log("Extracted! Cleaning up...")
         tar.close()
         os.remove(file_name)
@@ -110,10 +110,10 @@ def download_project_remote(project_name, directory_name_overriden):
 def pull_directory():
     log('Pulling directory...')
     project_name = ''
-    directory_name_overriden = False
+    directory_name_overridden = False
     if len(sys.argv) == 2:
         log('No project specified, falling back to current directory')
-        project_name, specified_by_user = get_project_name()
+        project_name, directory_name_overridden = get_project_name()
     else:
         project_name = sys.argv[2]
         directory_name_overriden = True
@@ -121,7 +121,7 @@ def pull_directory():
 
     if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        download_project_remote(project_name, directory_name_overriden)
+        download_project_remote(project_name, directory_name_overridden)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 

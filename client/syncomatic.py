@@ -48,12 +48,12 @@ def make_tarfile(output_filename, source_dir):
 
 def get_project_name():
     if not os.path.isfile('.sm'):
-        return os.getcwd().split('/').pop()
+        return os.getcwd().split('/').pop(), False
     else:
         with open('.sm', 'r') as sm_file:
             project_name = sm_file.readline().strip('\n').strip('\r')
             sm_file.close()
-            return project_name
+            return project_name, True
 
 
 def send_directory():
@@ -65,7 +65,7 @@ def send_directory():
     log('Compressed!')
     log('Uploading directory...')
     with open('/var/tmp/syncomatic/archive.tar.gz', 'rb') as file:
-        project_name = get_project_name()
+        project_name, _ = get_project_name()
         params = {
             'project_name': project_name
         }
@@ -87,7 +87,7 @@ def project_exists_remote(project):
     return r.status_code == 200
 
 
-def download_project_remote(project_name, specified_by_user):
+def download_project_remote(project_name, directory_name_overriden):
     params = {
         'project_name': project_name
     }
@@ -98,7 +98,7 @@ def download_project_remote(project_name, specified_by_user):
         log('Downloaded!', 'SUCCESS')
         log('Extracting project...')
         tar = tarfile.open(file_name)
-        tar.extractall('.' if specified_by_user else '..')
+        tar.extractall('.' if directory_name_overriden else '..')
         log("Extracted! Cleaning up...")
         tar.close()
         os.remove(file_name)
@@ -110,18 +110,18 @@ def download_project_remote(project_name, specified_by_user):
 def pull_directory():
     log('Pulling directory...')
     project_name = ''
-    specified_by_user = False
+    directory_name_overriden = False
     if len(sys.argv) == 2:
         log('No project specified, falling back to current directory')
-        project_name = get_project_name()
+        project_name, specified_by_user = get_project_name()
     else:
         project_name = sys.argv[2]
-        specified_by_user = True
+        directory_name_overriden = True
         log('Project name has been specified. Searching for ' + project_name)
 
     if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        download_project_remote(project_name, specified_by_user)
+        download_project_remote(project_name, directory_name_overriden)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 

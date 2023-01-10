@@ -47,7 +47,13 @@ def make_tarfile(output_filename, source_dir):
 
 
 def get_project_name():
-    return os.getcwd().split('/').pop()
+    if not os.path.isfile('.sm'):
+        return os.getcwd().split('/').pop()
+    else:
+        with open('.sm', 'r') as sm_file:
+            project_name = sm_file.readline()
+            sm_file.close()
+            return project_name
 
 
 def send_directory():

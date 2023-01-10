@@ -93,8 +93,10 @@ def download_project_remote(project_name, specified_by_user):
         log('Extracting project...')
         tar = tarfile.open(file_name)
         tar.extractall('.' if specified_by_user else '..')
+        log("Extracted! Cleaning up...")
         tar.close()
         os.remove(file_name)
+        log("All done!")
     else:
         log('Download Failed :(', 'FAIL')
 
@@ -119,22 +121,18 @@ def pull_directory():
 
 
 def show_help():
-    print('Something helpful')
+    print('Syncomatic Help\n\npush [project name] - Push the current directory\npull [project name] - Pull the current directory\nremote - View the current server URL\n\nConfig is in ~/.config/syncomatic/config.yml\nYou only need to set the `server` parameter to your Syncomatic server. By default, it is set to localhost on port 3000')
 
 
 def setup_remote():
-    if (len(sys.argv) == 2):
-        log('Current server URL: ' + get_server_url())
-    else:
-        new_url = sys.argv[2]
-        log('Changed remote URL to ' + new_url)
+    log('Current server URL: ' + get_server_url())
 
 
 init_config()
 
 if (len(sys.argv) == 1):
     show_help()
-elif (sys.argv[1] == 'send'):
+elif (sys.argv[1] == 'push'):
     send_directory()
 elif (sys.argv[1] == 'pull'):
     pull_directory()

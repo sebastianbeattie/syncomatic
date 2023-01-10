@@ -51,7 +51,7 @@ def get_project_name():
         return os.getcwd().split('/').pop()
     else:
         with open('.sm', 'r') as sm_file:
-            project_name = sm_file.readline()
+            project_name = sm_file.readline().strip('\n').strip('\r')
             sm_file.close()
             return project_name
 

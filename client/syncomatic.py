@@ -35,16 +35,21 @@ def log(message, status='INFO'):
 
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, 'w:gz') as tar:
-        with open('.sm', 'r') as sm_file:
-            config = json.loads(sm_file)
-            sm_file.close()
+        if os.path.isfile('.sm'):
+            with open('.sm', 'r') as sm_file:
+                config = json.loads(sm_file)
+                sm_file.close()
+                files = os.listdir(".")
+                for file in files:
+                    if config is None:
+                        tar.add(file)
+                    elif not file.replace(source_dir, "") in config["ignored"]:
+                        tar.add(file)
+                tar.close()
+        else:
             files = os.listdir(".")
             for file in files:
-                if config is None:
-                    tar.add(file)
-                elif not file.replace(source_dir, "") in config["ignored"]:
-                    tar.add(file)
-            tar.close()
+                tar.add(file)
 
 
 def get_dir_name():

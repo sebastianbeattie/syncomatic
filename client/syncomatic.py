@@ -6,8 +6,7 @@ import tarfile
 import os.path
 import os
 import requests
-import yaml
-import shutil
+import json
 
 
 def init_config():
@@ -15,18 +14,18 @@ def init_config():
     if not os.path.exists(config_path):
         log('Syncomatic config dir doesn\'t exist. Creating...')
         os.makedirs(config_path)
-    config_file_path = config_path + 'config.yml'
+    config_file_path = config_path + 'config.json'
     if not os.path.isfile(config_file_path):
         log('Syncomatic config file doesn\'t exist. Creating default...')
         config = {'server': 'http://localhost:3000'}
         with open(config_file_path, 'w') as file:
-            yaml.dump(config, file)
+            json.dumps(config, file)
 
 
 def get_server_url():
-    config_path = os.path.expanduser('~') + '/.config/syncomatic/config.yml'
+    config_path = os.path.expanduser('~') + '/.config/syncomatic/config.json'
     with open(config_path, 'r') as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+        config = json.loads(file)
         return config['server']
 
 
@@ -36,23 +35,34 @@ def log(message, status='INFO'):
 
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, 'w:gz') as tar:
-        files = os.listdir(".")
-        for file in files:
-            if not '.git' in file:
-                tar.add(file)
-        tar.close()
+        with open('.sm', 'r') as sm_file:
+            config = json.loads(sm_file)
+            sm_file.close()
+            files = os.listdir(".")
+            for file in files:
+                if config is None:
+                    tar.add(file)
+                elif not file.replace(source_dir, "") in config["ignored"]:
+                    tar.add(file)
+            tar.close()
+
 
 def get_dir_name():
     return os.getcwd().split('/').pop()
+
 
 def get_project_name():
     if not os.path.isfile('.sm'):
         return get_dir_name(), False
     else:
         with open('.sm', 'r') as sm_file:
-            project_name = sm_file.readline().strip('\n').strip('\r')
+            config = json.loads(sm_file)
             sm_file.close()
-            return project_name, True
+            project_name = config['project']
+            if (project_name is None):
+                return get_dir_name(), False
+            else:
+                return project_name, True
 
 
 def send_directory():
@@ -122,7 +132,8 @@ def pull_directory():
 
     if project_exists_remote(project_name):
         log('Found project ' + project_name + ' remotely. Downloading...')
-        download_project_remote(project_name, specified_by_user, from_config_file)
+        download_project_remote(
+            project_name, specified_by_user, from_config_file)
     else:
         log('Could not find project ' + project_name + ' remotely.', 'FAIL')
 

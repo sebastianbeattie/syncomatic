@@ -25,7 +25,7 @@ def init_config():
 def get_server_url():
     config_path = os.path.expanduser('~') + '/.config/syncomatic/config.json'
     with open(config_path, 'r') as file:
-        config = json.loads(file)
+        config = json.load(file)
         return config['server']
 
 
@@ -37,7 +37,7 @@ def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, 'w:gz') as tar:
         if os.path.isfile('.sm'):
             with open('.sm', 'r') as sm_file:
-                config = json.loads(sm_file)
+                config = json.load(sm_file)
                 sm_file.close()
                 files = os.listdir(".")
                 for file in files:
@@ -61,7 +61,7 @@ def get_project_name():
         return get_dir_name(), False
     else:
         with open('.sm', 'r') as sm_file:
-            config = json.loads(sm_file)
+            config = json.load(sm_file)
             sm_file.close()
             project_name = config['project']
             if (project_name is None):

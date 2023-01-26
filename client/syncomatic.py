@@ -19,7 +19,7 @@ def init_config():
         log('Syncomatic config file doesn\'t exist. Creating default...')
         config = {'server': 'http://localhost:3000'}
         with open(config_file_path, 'w') as file:
-            json.dumps(config, file)
+            json.dump(config, file)
 
 
 def get_server_url():
